@@ -11,7 +11,7 @@ BUILD_DIR = File.join('/tmp', 'jading', 'build')
 FileUtils::mkdir_p(BUILD_DIR)
 
 Options = Struct.new(:paths, :gems, :libs)
-options = Options.new([], ['cascading.jruby'], [File.join(BUILD_DIR, 'lib')])
+options = Options.new([], ['cascading.jruby'], [File.join(BUILD_DIR, 'jading-0.0.1.jar'), File.join(BUILD_DIR, 'lib')])
 option_parser = OptionParser.new do |opts|
   opts.banner  = <<END
 Script used to produce a jade jar for execution via hadoop jar.  Any paths passed after the options are copied as-is into the root of the jade jar.
@@ -85,12 +85,9 @@ end
 
 FileUtils::rm_rf(File.join(BUILD_DIR, 'jar'))
 
-# Retrieve Jading's Ivy dependencies
-retrieve_success = system("ant -f #{File.join(File.dirname(__FILE__), 'build.xml')} retrieve-ivy")
-raise "Failed to retrieve Ivy dependencies" unless retrieve_success
-
-# Build Jading's Main class for jade jar
-# TODO: build runner and add to build/jar
+# Built the Jading jar and retrieve all it's dependencies
+jar_success = system("ant -f #{File.join(File.dirname(__FILE__), 'build.xml')} jar")
+raise "Failed to build Jading jar" unless jar_success
 
 options.gems.each do |gem_name|
   unpack_gem(gem_name, File.join(BUILD_DIR, 'jar', 'vendor', 'gems'))
@@ -105,5 +102,5 @@ options.paths.each do |path|
 end
 
 # Build the jade jar in the current directory
-jar_success = system("ant -f #{File.join(File.dirname(__FILE__), 'build.xml')} -Dexecution.dir=#{File.expand_path('.')} jar")
+jar_success = system("ant -f #{File.join(File.dirname(__FILE__), 'build.xml')} -Dexecution.dir=#{File.expand_path('.')} jade-jar")
 raise "Failed to create jade jar" unless jar_success
