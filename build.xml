@@ -1,0 +1,39 @@
+<?xml version="1.0"?>
+<project name="jading" default="jar" basedir="." xmlns:ivy="antlib:org.apache.ivy.ant" xmlns="antlib:org.apache.tools.ant">
+  <property name="build.dir" location="/tmp/jading/build" />
+  <property name="build.lib" location="${build.dir}/lib" />
+  <property name="build.jar" location="${build.dir}/jar" />
+
+  <property name="ivy.install.version" value="2.2.0" />
+  <property name="ivy.home" value="${build.dir}/ivy" />
+  <property name="ivy.jar.dir" value="${ivy.home}/lib" />
+
+  <target name="download-ivy">
+    <mkdir dir="${ivy.jar.dir}"/>
+    <get src="http://repo2.maven.org/maven2/org/apache/ivy/ivy/${ivy.install.version}/ivy-${ivy.install.version}.jar" dest="${ivy.jar.dir}/ivy.jar" usetimestamp="true"/>
+  </target>
+
+  <target name="init-ivy" depends="download-ivy">
+    <path id="ivy.lib.path">
+      <fileset dir="${ivy.jar.dir}" includes="*.jar"/>
+    </path>
+    <taskdef resource="org/apache/ivy/ant/antlib.xml" uri="antlib:org.apache.ivy.ant" classpathref="ivy.lib.path"/>
+    <ivy:settings file="${basedir}/ivysettings.xml" />
+  </target>
+
+  <target name="retrieve-ivy" depends="init-ivy">
+    <ivy:retrieve pattern="${build.lib}/[artifact]-[revision].[ext]" conf="*" />
+  </target>
+
+  <target name="jar">
+    <jar jarfile="${execution.dir}/jade.jar">
+      <fileset dir="${build.jar}">
+        <include name="**/*" />
+      </fileset>
+    </jar>
+  </target>
+
+  <target name="clean">
+    <delete dir="${build.dir}" />
+  </target>
+</project>

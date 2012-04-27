@@ -1,0 +1,8 @@
+#! /usr/bin/env bash
+
+./jade -g cascading.jruby \
+  -l $ANALYTICS_HOME/lib/operators/target/custom-cascading-operators-0.0.2.jar \
+  -l $ANALYTICS_HOME/lib/operators/target/emr \
+  $ANALYTICS_HOME/lib/jobs/helpers \
+  $ANALYTICS_HOME/lib/ruby/fdo.rb \
+  $ANALYTICS_HOME/lib/jobs/cascading/*/*.rb
