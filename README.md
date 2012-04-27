@@ -7,6 +7,7 @@ execution via hadoop jar.
 ## Example Usage
 
 Running:
+
     jade \
       -g jruby-openssl \
       -g json \
@@ -18,6 +19,7 @@ Running:
 
 Produces jade.jar in the current directory, which can be executed on a Hadoop
 cluster using:
+
     hadoop jar jade.jar com.etsy.jading.Main index_events.rb yesterday_path=2012_04_26 input_prefix=hdfs://logs.etsy.com ...
 
 For more details, see `jade -h`.
