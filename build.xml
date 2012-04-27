@@ -13,7 +13,6 @@
   <property name="ivy.jar.dir" value="${ivy.home}/lib" />
 
   <property name="src.java.dir" location="${basedir}/src/main/java" />
-  <property name="src.jruby.dir" location="${basedir}/src/main/resources/com/etsy/jading" />
   <property name="main.resource.dir" location="${basedir}/src/main/resources" />
 
   <property name="src.java.test.dir" location="${basedir}/src/test/java" />
@@ -64,15 +63,23 @@
       <fileset dir="${build.classes}">
         <include name="**/*" />
       </fileset>
-      <fileset dir="${src.jruby.dir}">
-        <include name="*.rb" />
+      <fileset dir="${main.resource.dir}">
+        <include name="**/*.rb" />
       </fileset>
     </jar>
   </target>
 
   <target name="jade-jar">
     <jar jarfile="${execution.dir}/jade.jar">
+      <!-- Contents prepared by jade -->
       <fileset dir="${build.jar}">
+        <include name="**/*" />
+      </fileset>
+      <!-- Contents prepared by Ant -->
+      <fileset dir="${build.classes}">
+        <include name="**/*" />
+      </fileset>
+      <fileset dir="${main.resource.dir}">
         <include name="**/*" />
       </fileset>
     </jar>
