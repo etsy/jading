@@ -17,7 +17,9 @@ option_parser = OptionParser.new do |opts|
 Script used to produce a jade jar for execution via hadoop jar.  Any paths passed after the options are copied as-is into the root of the jade jar.
 
 Example usage:
-./jade -g cascading.jruby \\
+#{__FILE__} \\
+  -g jruby-openssl \\
+  -g json \\
   -l lib/operators/target/custom-cascading-operators-0.0.2.jar \\
   -l lib/operators/target/emr \\
   lib/jobs/helpers \\

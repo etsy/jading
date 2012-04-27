@@ -1,6 +1,8 @@
 #! /usr/bin/env bash
 
-./jade -g cascading.jruby \
+./jade \
+  -g jruby-openssl \
+  -g json \
   -l $ANALYTICS_HOME/lib/operators/target/custom-cascading-operators-0.0.2.jar \
   -l $ANALYTICS_HOME/lib/operators/target/emr \
   $ANALYTICS_HOME/lib/jobs/helpers \
