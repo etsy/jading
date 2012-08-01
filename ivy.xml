@@ -21,9 +21,9 @@
   </publications>
 
   <dependencies>
-    <dependency org="cascading" name="cascading-core" rev="2.0.0-wip-255" conf="default" />
-    <dependency org="cascading" name="cascading-local" rev="2.0.0-wip-255" conf="default" />
-    <dependency org="cascading" name="cascading-hadoop" rev="2.0.0-wip-255" conf="default" />
+    <dependency org="cascading" name="cascading-core" rev="2.0.0" conf="default" />
+    <dependency org="cascading" name="cascading-local" rev="2.0.0" conf="default" />
+    <dependency org="cascading" name="cascading-hadoop" rev="2.0.0" conf="default" />
     <dependency org="org.jruby" name="jruby" rev="1.6.5" conf="default" />
   </dependencies>
 </ivy-module>

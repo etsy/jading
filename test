@@ -6,5 +6,6 @@
   -l $ANALYTICS_HOME/lib/operators/target/custom-cascading-operators-0.0.2.jar \
   -l $ANALYTICS_HOME/lib/operators/target/emr \
   $ANALYTICS_HOME/lib/jobs/helpers \
-  $ANALYTICS_HOME/lib/ruby/fdo.rb \
+  $ANALYTICS_HOME/lib/ruby/cli.rb \
+  $ANALYTICS_HOME/lib/ruby/barnum_date.rb \
   $ANALYTICS_HOME/lib/jobs/cascading/*/*.rb

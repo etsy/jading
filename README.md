@@ -14,7 +14,8 @@ Running:
       -l lib/operators/target/custom-cascading-operators-0.0.2.jar \
       -l lib/operators/target/emr \
       lib/jobs/helpers \
-      lib/ruby/fdo.rb \
+      lib/ruby/cli.rb \
+      lib/ruby/barnum_date.rb \
       lib/jobs/cascading/nightly/index_events.rb
 
 Produces jade.jar in the current directory, which can be executed on a Hadoop
