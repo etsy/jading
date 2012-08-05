@@ -88,6 +88,18 @@ end
 
 FileUtils::rm_rf(File.join(BUILD_DIR, 'jar'))
 
+# Guard ivy:resolve with properties file
+resolved_properties = File.join(File.dirname(__FILE__), 'resolved.properties')
+if File.exists?(resolved_properties) &&
+  File.ctime(resolved_properties) > File.ctime(File.join(File.dirname(__FILE__), 'ivy.xml'))
+  puts 'Ivy dependencies already resolved'
+else
+  raise 'Ant retrieve failed' unless system('ant retrieve-ivy')
+  File.open(resolved_properties, 'w+') do |file|
+    file << 'resolved=true'
+  end
+end
+
 # Compile the Jading library
 compile_success = system("ant -f #{File.join(File.dirname(__FILE__), 'build.xml')} compile")
 raise "Failed to compile Jading" unless compile_success

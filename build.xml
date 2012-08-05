@@ -18,12 +18,15 @@
   <property name="src.java.test.dir" location="${basedir}/src/test/java" />
   <property name="test.resource.dir" location="${basedir}/src/test/resources" />
 
-  <target name="download-ivy">
+  <property file="${basedir}/resolved.properties" />
+  <echo message="Resolved?: ${resolved}" />
+
+  <target name="download-ivy" unless="${resolved}">
     <mkdir dir="${ivy.jar.dir}"/>
     <get src="http://repo2.maven.org/maven2/org/apache/ivy/ivy/${ivy.install.version}/ivy-${ivy.install.version}.jar" dest="${ivy.jar.dir}/ivy.jar" usetimestamp="true"/>
   </target>
 
-  <target name="init-ivy" depends="download-ivy">
+  <target name="init-ivy" depends="download-ivy" unless="${resolved}">
     <path id="ivy.lib.path">
       <fileset dir="${ivy.jar.dir}" includes="*.jar"/>
     </path>
@@ -31,7 +34,7 @@
     <ivy:settings file="${basedir}/ivysettings.xml" />
   </target>
 
-  <target name="retrieve-ivy" depends="init-ivy">
+  <target name="retrieve-ivy" depends="init-ivy" unless="${resolved}">
     <ivy:resolve file="${basedir}/ivy.xml" conf="*" />
     <ivy:retrieve pattern="${build.lib}/[artifact]-[revision].[ext]" conf="*" />
   </target>
