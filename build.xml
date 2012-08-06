@@ -128,5 +128,6 @@
 
   <target name="clean">
     <delete dir="${build.dir}" />
+    <delete file="${basedir}/resolved.properties" />
   </target>
 </project>
