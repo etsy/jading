@@ -17,7 +17,6 @@ import org.jruby.runtime.GlobalVariable;
  * @see CascadingRunnable
  */
 public class Main {
-    private final static String JRUBY_HOME = System.getenv("JRUBY_HOME") != null ? System.getenv("JRUBY_HOME") : "/opt/jruby";
     private static Logger LOG = Logger.getLogger(Main.class.getName());
 
     /**
@@ -61,9 +60,6 @@ public class Main {
             cascadingScriptArgs[0] = "com/etsy/jading/Main.java";
 
             RubyInstanceConfig config = new RubyInstanceConfig();
-
-            LOG.info("JRUBY_HOME set to: " + JRUBY_HOME);
-            config.setJRubyHome(JRUBY_HOME);
             config.processArguments(cascadingScriptArgs);
 
             StringBuilder logArgs = new StringBuilder();
