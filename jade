@@ -83,6 +83,7 @@ if File.exists?(resolved_properties) &&
   File.ctime(resolved_properties) > File.ctime(File.join(File.dirname(__FILE__), 'ivy.xml'))
   puts 'Ivy dependencies already resolved'
 else
+  `rm -f #{resolved_properties}`
   raise 'Ant retrieve failed' unless system('ant retrieve-ivy')
   File.open(resolved_properties, 'w+') do |file|
     file << 'resolved=true'
