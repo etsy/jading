@@ -79,11 +79,8 @@ public class Main {
             rubyProperties.putAll(props);
             runtime.defineVariable(new GlobalVariable(runtime, "$jobconf_properties", rubyProperties));
 
-            LOG.info("Requiring 'rubygems'");
-            runtime.evalScriptlet("require 'rubygems'");
-
-            LOG.info("Adding vendor to the Ruby Gems path");
-            runtime.evalScriptlet("Gem.path.unshift('vendor')");
+            LOG.info("Requiring 'com/etsy/jading/gem_path'");
+            runtime.executeScript("require 'com/etsy/jading/gem_path'", "com/etsy/jading/gem_path.rb");
 
             LOG.info("Requiring '" + cascadingScript + "'");
             runtime.executeScript("require '" + cascadingScript + "'", cascadingScript);
