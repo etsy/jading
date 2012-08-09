@@ -11,15 +11,15 @@ BUILD_DIR = File.join('/tmp', 'jading', 'build')
 FileUtils::mkdir_p(BUILD_DIR)
 
 Options = Struct.new(:paths, :gems, :libs)
-options = Options.new([], ['cascading.jruby'], [File.join(BUILD_DIR, 'lib')])
+options = Options.new([], {'cascading.jruby' => '0.0.9'}, [File.join(BUILD_DIR, 'lib')])
 option_parser = OptionParser.new do |opts|
   opts.banner  = <<END
 Script used to produce a jade jar for execution via hadoop jar.  Any paths passed after the options are copied as-is into the root of the jade jar.
 
 Example usage:
 #{__FILE__} \\
-  -g jruby-openssl \\
-  -g json \\
+  -g jruby-openssl@0.2.3 \\
+  -g json@1.7.0 \\
   -l lib/operators/target/custom-cascading-operators-0.0.2.jar \\
   -l lib/operators/target/emr \\
   lib/jobs/helpers \\
@@ -30,8 +30,10 @@ Example usage:
 Usage: #{__FILE__} [options] paths
 END
 
-  opts.on('-g', '--gem gem_name', 'Install and include named gem and dependencies in vendor/gems directory of jade jar') do |gem_name|
-    options.gems << gem_name
+  opts.on('-g', '--gem gem_name@version', 'Install and include named gem at version and dependencies in vendor/gems directory of jade jar') do |gem_name_version|
+    gem_name, version = gem_name_version.split('@')
+    version ||= Gem::Requirement.default
+    options.gems[gem_name] = version
   end
 
   opts.on('-l', '--lib path', 'Include files and directories (flattened) in lib directory of jade jar') do |path|
@@ -48,9 +50,9 @@ options.paths += ARGV
 
 # TODO: provide gem caching, which we lost when we switched from unpacking to
 # direct installation
-def install_gem(gem_name, target_dir)
+def install_gem(gem_name, version, target_dir)
   installer = Gem::DependencyInstaller.new(:install_dir => target_dir)
-  installer.install(gem_name)
+  installer.install(gem_name, version)
 end
 
 def copy_path(path, target_dir, params = {})
@@ -94,8 +96,8 @@ end
 compile_success = system("ant -f #{File.join(File.dirname(__FILE__), 'build.xml')} compile")
 raise "Failed to compile Jading" unless compile_success
 
-options.gems.each do |gem_name|
-  install_gem(gem_name, File.join(BUILD_DIR, 'jar', 'vendor', 'gems'))
+options.gems.each do |gem_name, version|
+  install_gem(gem_name, version, File.join(BUILD_DIR, 'jar', 'vendor', 'gems'))
 end
 
 options.libs.each do |path|
