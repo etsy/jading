@@ -71,6 +71,13 @@ public class Main {
 
             Ruby runtime = Ruby.newInstance(config);
 
+            /*
+             * See long comment in lib/cascading/cascading.rb about why this is
+             * an unsatisfying approach to configuring user jobs.  A better way
+             * of doing this would be to instantiate a job defined by the user
+             * in the runner and pass it properties at that time, but this
+             * would require a new piece that doesn't exist, yet.
+             */
             RubyHash rubyProperties = RubyHash.newHash(runtime);
             rubyProperties.putAll(props);
             runtime.defineVariable(new GlobalVariable(runtime, "$jobconf_properties", rubyProperties));
