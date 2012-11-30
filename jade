@@ -11,7 +11,7 @@ BUILD_DIR = File.join('/tmp', 'jading', 'build')
 FileUtils::mkdir_p(BUILD_DIR)
 
 Options = Struct.new(:paths, :gems, :libs)
-options = Options.new([], {'cascading.jruby' => '0.0.9'}, [File.join(BUILD_DIR, 'lib')])
+options = Options.new([], {'cascading.jruby' => '0.0.10'}, [File.join(BUILD_DIR, 'lib')])
 option_parser = OptionParser.new do |opts|
   opts.banner  = <<END
 Script used to produce a jade jar for execution via hadoop jar.  Any paths passed after the options are copied as-is into the root of the jade jar.
