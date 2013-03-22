@@ -1,8 +1,0 @@
-#! /usr/bin/env bash
-
-if test $# -eq 0; then
-  echo "Usage: $0 <c.j script> [ARGV]" 1>&2
-  exit 1
-fi
-
-hadoop jar jade.jar com.etsy.jading.Main $@
