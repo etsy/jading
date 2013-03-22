@@ -1,8 +1,15 @@
 # Jading
 
-Jading is a script and library used to package
-[cascading.jruby](https://github.com/etsy/cascading.jruby) scripts for
-execution via hadoop jar.
+Jading is a build and execution tool for
+[cascading.jruby](https://github.com/etsy/cascading.jruby) that handles
+packaging all the dependencies of your scripts into a jar for execution on a
+Hadoop cluster.
+
+The primary entry point to Jading is the script "jade." This script operates in
+two modes, build and execution.  The first allows you to produce jade jars,
+which contain everything you need to run a cascading.jruby job on a Hadoop
+cluster.  The second is a convenience wrapper for hadoop jar that selects the
+correct "runner" code from Jading's library to run your job remotely.
 
 ## Example Usage
 
