@@ -10,13 +10,27 @@ require 'rubygems/installer'
 BUILD_DIR = File.join('/tmp', 'jading', 'build')
 FileUtils::mkdir_p(BUILD_DIR)
 
-Options = Struct.new(:paths, :gems, :libs)
-options = Options.new([], {'cascading.jruby' => '0.0.10'}, [File.join(BUILD_DIR, 'lib')])
+Options = Struct.new(:execute_script, :gems, :libs)
+options = Options.new(nil, {'cascading.jruby' => '0.0.10'}, [File.join(BUILD_DIR, 'lib')])
 option_parser = OptionParser.new do |opts|
   opts.banner  = <<END
-Script used to produce a jade jar for execution via hadoop jar.  Any paths passed after the options are copied as-is into the root of the jade jar.
+Script used to build and run jade jars.  A jade jar contains all the code and
+dependencies necessary to run a cascading.jruby script.
 
-Example usage:
+This script operates in one of two modes: build mode and execute mode.
+
+First pass in the gems (-g), libraries or directories of libraries (-l), and
+paths you want included in the jade jar.  A jar called jade.jar will be
+produced in the current directory for later execution.  Paths are passed after
+the named options and are copied as-is into the root of the jade jar.
+
+After building the jade jar, you can execute any cascading.jruby script in the
+jar by passing its name to the -e option.  This is a convenience wrapper for
+invoking hadoop jar on the "runner" used to execute cascading.jruby scripts.
+
+Build usage: #{__FILE__} [options] paths
+
+Example build usage:
 #{__FILE__} \\
   -g jruby-openssl@0.2.3 \\
   -g json@1.7.0 \\
@@ -27,8 +41,16 @@ Example usage:
   lib/ruby/barnum_date.rb \\
   lib/jobs/cascading/nightly/index_events.rb
 
-Usage: #{__FILE__} [options] paths
+Execution usage: #{__FILE__} -e cascading.jruby_script
+
+Example execution usage:
+#{__FILE__} -e index_events.rb yesterday_path=2012_04_26 input_prefix=hdfs://logs.etsy.com ...
+
 END
+
+  opts.on('-e', '--execute script', 'Execute the specified script using hadoop jar; assumes jade.jar is in the current directory') do |execute_script|
+    options.execute_script = execute_script
+  end
 
   opts.on('-g', '--gem gem_name@version', 'Install and include named gem at version and dependencies in vendor/gems directory of jade jar') do |gem_name_version|
     gem_name, version = gem_name_version.split('@')
@@ -46,7 +68,6 @@ END
   end
 end
 option_parser.parse!(ARGV)
-options.paths += ARGV
 
 # TODO: provide gem caching, which we lost when we switched from unpacking to
 # direct installation
@@ -77,37 +98,43 @@ def copy_path(path, target_dir, params = {})
   end
 end
 
-FileUtils::rm_rf(File.join(BUILD_DIR, 'jar'))
-
-# Guard ivy:resolve with properties file
-resolved_properties = File.join(File.dirname(__FILE__), 'resolved.properties')
-if File.exists?(resolved_properties) &&
-  File.ctime(resolved_properties) > File.ctime(File.join(File.dirname(__FILE__), 'ivy.xml'))
-  puts 'Ivy dependencies already resolved'
+if options.execute_script
+  hadoop_args = ['jar', 'jade.jar', 'com.etsy.jading.Main', options.execute_script] + ARGV
+  raise 'Remote execution of jade jar failed' unless system('hadoop', *hadoop_args)
 else
-  `rm -f #{resolved_properties}`
-  raise 'Ant retrieve failed' unless system("ant -f #{File.join(File.dirname(__FILE__), 'build.xml')} retrieve-ivy")
-  File.open(resolved_properties, 'w+') do |file|
-    file << 'resolved=true'
+  paths = ARGV # Take paths from remaining command line arguments
+  FileUtils::rm_rf(File.join(BUILD_DIR, 'jar'))
+
+  # Guard ivy:resolve with properties file
+  resolved_properties = File.join(File.dirname(__FILE__), 'resolved.properties')
+  if File.exists?(resolved_properties) &&
+    File.ctime(resolved_properties) > File.ctime(File.join(File.dirname(__FILE__), 'ivy.xml'))
+    puts 'Ivy dependencies already resolved'
+  else
+    `rm -f #{resolved_properties}`
+    raise 'Ant retrieve failed' unless system("ant -f #{File.join(File.dirname(__FILE__), 'build.xml')} retrieve-ivy")
+    File.open(resolved_properties, 'w+') do |file|
+      file << 'resolved=true'
+    end
   end
+
+  # Compile the Jading library
+  compile_success = system("ant -f #{File.join(File.dirname(__FILE__), 'build.xml')} compile")
+  raise "Failed to compile Jading" unless compile_success
+
+  options.gems.each do |gem_name, version|
+    install_gem(gem_name, version, File.join(BUILD_DIR, 'jar', 'vendor', 'gems'))
+  end
+
+  options.libs.each do |path|
+    copy_path(path, File.join(BUILD_DIR, 'jar', 'lib'), :flatten => true)
+  end
+
+  paths.each do |path|
+    copy_path(path, File.join(BUILD_DIR, 'jar'))
+  end
+
+  # Build the jade jar in the current directory
+  jar_success = system("ant -f #{File.join(File.dirname(__FILE__), 'build.xml')} -Dexecution.dir=#{File.expand_path('.')} jade-jar")
+  raise "Failed to create jade jar" unless jar_success
 end
-
-# Compile the Jading library
-compile_success = system("ant -f #{File.join(File.dirname(__FILE__), 'build.xml')} compile")
-raise "Failed to compile Jading" unless compile_success
-
-options.gems.each do |gem_name, version|
-  install_gem(gem_name, version, File.join(BUILD_DIR, 'jar', 'vendor', 'gems'))
-end
-
-options.libs.each do |path|
-  copy_path(path, File.join(BUILD_DIR, 'jar', 'lib'), :flatten => true)
-end
-
-options.paths.each do |path|
-  copy_path(path, File.join(BUILD_DIR, 'jar'))
-end
-
-# Build the jade jar in the current directory
-jar_success = system("ant -f #{File.join(File.dirname(__FILE__), 'build.xml')} -Dexecution.dir=#{File.expand_path('.')} jade-jar")
-raise "Failed to create jade jar" unless jar_success

@@ -21,6 +21,6 @@ Running:
 Produces jade.jar in the current directory, which can be executed on a Hadoop
 cluster using:
 
-    jading index_events.rb yesterday_path=2012_04_26 input_prefix=hdfs://logs.etsy.com ...
+    jade -e index_events.rb yesterday_path=2012_04_26 input_prefix=hdfs://logs.etsy.com ...
 
 For more details, see `jade -h` and [Getting Started](https://github.com/etsy/jading/wiki/Getting-Started) in the wiki.
