@@ -86,7 +86,7 @@ if File.exists?(resolved_properties) &&
   puts 'Ivy dependencies already resolved'
 else
   `rm -f #{resolved_properties}`
-  raise 'Ant retrieve failed' unless system('ant retrieve-ivy')
+  raise 'Ant retrieve failed' unless system("ant -f #{File.join(File.dirname(__FILE__), 'build.xml')} retrieve-ivy")
   File.open(resolved_properties, 'w+') do |file|
     file << 'resolved=true'
   end
