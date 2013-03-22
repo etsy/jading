@@ -23,4 +23,4 @@ cluster using:
 
     hadoop jar jade.jar com.etsy.jading.Main index_events.rb yesterday_path=2012_04_26 input_prefix=hdfs://logs.etsy.com ...
 
-For more details, see `jade -h`.
+For more details, see `jade -h` and [Getting Started](https://github.com/etsy/jading/wiki/Getting-Started) in the wiki.
