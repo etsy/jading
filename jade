@@ -46,6 +46,7 @@ Execution usage: #{__FILE__} -e cascading.jruby_script
 Example execution usage:
 #{__FILE__} -e index_events.rb yesterday_path=2012_04_26 input_prefix=hdfs://logs.etsy.com ...
 
+Options:
 END
 
   opts.on('-e', '--execute script', 'Execute the specified script using hadoop jar; assumes jade.jar is in the current directory') do |execute_script|
