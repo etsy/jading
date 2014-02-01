@@ -11,7 +11,7 @@ BUILD_DIR = File.join('/tmp', 'jading', 'build')
 FileUtils::mkdir_p(BUILD_DIR)
 
 Options = Struct.new(:execute_script, :gems, :libs)
-options = Options.new(nil, {'cascading.jruby' => '0.0.10'}, [File.join(BUILD_DIR, 'lib')])
+options = Options.new(nil, {'cascading.jruby' => '1.0.0'}, [File.join(BUILD_DIR, 'lib')])
 option_parser = OptionParser.new do |opts|
   opts.banner  = <<END
 Script used to build and run jade jars.  A jade jar contains all the code and

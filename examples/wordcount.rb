@@ -12,7 +12,7 @@ word_count_cascade = cascade 'wordcount', :mode => mode do
     source 'input', tap(input_path)
 
     assembly 'input' do
-      split_rows 'line', 'word', :pattern => /[.,]*\s+/, :output => 'word'
+      split_rows 'line', /[.,]*\s+/, 'word', :output => 'word'
       group_by 'word' do
         count
       end
